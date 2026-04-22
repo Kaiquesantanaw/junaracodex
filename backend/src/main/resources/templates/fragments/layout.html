@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-BR"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:fragment="head(title)">
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title th:text="${title} + ' — SolibriProfile'">SolibriProfile</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}"/>
+</head>
+<body>
+
+<!-- ── Navbar ─────────────────────────────────────────────────── -->
+<nav th:fragment="navbar" class="navbar">
+    <div class="nav-inner">
+        <a th:href="@{/}" class="nav-brand">Solibri<span>Profile</span></a>
+
+        <div class="nav-links">
+            <a th:href="@{/}" class="nav-link">Home</a>
+            <a th:href="@{/dashboard}" class="nav-link" sec:authorize="isAuthenticated()">Dashboard</a>
+            <a th:href="@{/admin}" class="nav-link admin-link" sec:authorize="hasAuthority('ROLE_ADMIN')">Admin</a>
+        </div>
+
+        <div class="nav-actions">
+            <!-- Não autenticado -->
+            <div sec:authorize="!isAuthenticated()">
+                <a th:href="@{/login}"    class="btn btn-ghost">Entrar</a>
+                <a th:href="@{/register}" class="btn btn-primary">Começar grátis</a>
+            </div>
+            <!-- Autenticado -->
+            <div sec:authorize="isAuthenticated()" class="nav-user">
+                <span class="avatar" sec:authentication="name">U</span>
+                <a th:href="@{/profile}" class="nav-link" th:text="|Olá, ${#authentication.name}|">Perfil</a>
+                <a th:href="@{/auth/logout}" class="btn btn-ghost btn-sm">Sair</a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- ── Footer ─────────────────────────────────────────────────── -->
+<footer th:fragment="footer" class="footer">
+    <div class="footer-inner">
+        <p class="footer-brand">Solibri<span>Profile</span></p>
+        <p class="footer-copy">&copy; <span th:text="${#temporals.year(#temporals.createNow())}">2024</span> SolibriProfile. Todos os direitos reservados.</p>
+    </div>
+</footer>
+
+<!-- ── Flash messages ─────────────────────────────────────────── -->
+<div th:fragment="flash" class="flash-wrapper">
+    <div th:if="${success}" class="flash flash-success" th:text="${success}"></div>
+    <div th:if="${error}"   class="flash flash-error"   th:text="${error}"></div>
+    <div th:if="${info}"    class="flash flash-info"    th:text="${info}"></div>
+</div>
+
+</body>
+</html>

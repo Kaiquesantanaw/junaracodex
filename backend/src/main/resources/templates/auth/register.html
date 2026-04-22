@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Cadastro')}"></head>
+<body>
+
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<main class="auth-page">
+    <div class="auth-card">
+        <h1>Criar conta</h1>
+        <p class="subtitle">Comece a organizar seu portfólio hoje</p>
+
+        <div th:replace="~{fragments/layout :: flash}"></div>
+
+        <form th:action="@{/auth/register}" method="post" th:object="${registerRequest}">
+            <div class="form-group">
+                <label class="form-label" for="username">Username</label>
+                <input id="username" class="form-input" type="text"
+                       th:field="*{username}" autocomplete="username"
+                       placeholder="seu-usuario" required/>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="email">E-mail</label>
+                <input id="email" class="form-input" type="email"
+                       th:field="*{email}" autocomplete="email"
+                       placeholder="seu@email.com" required/>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="password">Senha</label>
+                <input id="password" class="form-input" type="password"
+                       th:field="*{password}" autocomplete="new-password"
+                       placeholder="mínimo 8 caracteres" required/>
+                <span class="form-hint">Mínimo 8 caracteres</span>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-full mt-2">Criar conta grátis</button>
+        </form>
+
+        <p class="auth-footer mt-2">
+            Já tem conta? <a th:href="@{/login}">Entrar</a>
+        </p>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>

@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="pt-BR"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Meu Perfil')}"></head>
+<body>
+
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<main class="page-wrapper">
+    <div class="profile-page-header">
+        <div>
+            <h1 class="page-title">Meu Perfil</h1>
+            <p class="text-muted" th:if="${profile.fullName != null and !#strings.isEmpty(profile.fullName)}">
+                Link público:
+                <a class="link-primary" th:href="@{'/u/' + ${username}}"
+                   th:text="|solibriprofile.com/u/${username}|" target="_blank"></a>
+            </p>
+        </div>
+        <a th:href="@{'/u/' + ${username}}" class="btn btn-ghost btn-sm" target="_blank">
+            Ver currículo público ↗
+        </a>
+    </div>
+
+    <div th:replace="~{fragments/layout :: flash}"></div>
+
+    <!-- ── Dados da conta ─────────────────────────────────── -->
+    <div class="card mb-2">
+        <div class="profile-header">
+            <div class="profile-avatar"
+                 th:text="${username != null and !#strings.isEmpty(username) ? #strings.substring(username, 0, 1).toUpperCase() : 'U'}">U</div>
+            <div class="profile-info">
+                <h2 th:text="${username}">username</h2>
+                <p th:text="${email}">email@exemplo.com</p>
+                <span class="badge badge-purple mt-1" th:text="${role}">ROLE_USER</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Formulário do currículo ────────────────────────── -->
+    <form th:action="@{/profile/save}" method="post" id="profileForm">
+
+        <!-- Informações básicas -->
+        <div class="card mb-2">
+            <div class="card-header"><h2>Informações básicas</h2></div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label" for="fullName">Nome completo</label>
+                    <input id="fullName" class="form-input" type="text" name="fullName"
+                           th:value="${profile.fullName}" placeholder="Ex: João Silva"/>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="jobTitle">Cargo / Título</label>
+                    <input id="jobTitle" class="form-input" type="text" name="jobTitle"
+                           th:value="${profile.jobTitle}" placeholder="Ex: Desenvolvedor Full Stack"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="location">Localização</label>
+                <input id="location" class="form-input" type="text" name="location"
+                       th:value="${profile.location}" placeholder="Ex: São Paulo, SP"/>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="bio">Sobre / Bio</label>
+                <textarea id="bio" class="form-input form-textarea" name="bio" rows="4"
+                          placeholder="Fale um pouco sobre você..." th:text="${profile.bio}"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="skills">
+                    Skills <span class="text-muted">(separe por vírgula)</span>
+                </label>
+                <input id="skills" class="form-input" type="text" name="skills"
+                       th:value="${profile.skills}"
+                       placeholder="Ex: Java, Spring Boot, React, Docker"/>
+            </div>
+
+            <div class="form-check mt-1">
+                <input type="checkbox" id="publicVisible" name="publicVisible" value="true"
+                       th:checked="${profile.publicVisible}"/>
+                <label for="publicVisible" class="form-label">Perfil público (visível para todos)</label>
+            </div>
+        </div>
+
+        <!-- Contato -->
+        <div class="card mb-2">
+            <div class="card-header"><h2>Contato</h2></div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label" for="contactEmail">E-mail público</label>
+                    <input id="contactEmail" class="form-input" type="email" name="contactEmail"
+                           th:value="${profile.contactEmail}" placeholder="contato@email.com"/>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="contactPhone">Telefone / WhatsApp</label>
+                    <input id="contactPhone" class="form-input" type="text" name="contactPhone"
+                           th:value="${profile.contactPhone}" placeholder="+55 11 99999-9999"/>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label" for="contactLinkedin">LinkedIn</label>
+                    <input id="contactLinkedin" class="form-input" type="url" name="contactLinkedin"
+                           th:value="${profile.contactLinkedin}"
+                           placeholder="https://linkedin.com/in/seuperfil"/>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="contactGithub">GitHub</label>
+                    <input id="contactGithub" class="form-input" type="url" name="contactGithub"
+                           th:value="${profile.contactGithub}"
+                           placeholder="https://github.com/seuusuario"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="contactWebsite">Website / Portfólio</label>
+                <input id="contactWebsite" class="form-input" type="url" name="contactWebsite"
+                       th:value="${profile.contactWebsite}" placeholder="https://seusite.com"/>
+            </div>
+        </div>
+
+        <!-- Projetos -->
+        <div class="card mb-2">
+            <div class="card-header">
+                <h2>Projetos</h2>
+                <button type="button" class="btn btn-ghost btn-sm" id="addProject">+ Adicionar projeto</button>
+            </div>
+            <div id="projectsList">
+                <div class="project-item" th:each="proj : ${profile.projects}">
+                    <input type="hidden" name="proj_id" th:value="${proj.id}"/>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Nome do projeto *</label>
+                            <input class="form-input" type="text" name="proj_name"
+                                   th:value="${proj.name}" required/>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Tecnologias</label>
+                            <input class="form-input" type="text" name="proj_tech"
+                                   th:value="${proj.technologies}" placeholder="Ex: React, Node.js"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Descrição</label>
+                        <textarea class="form-input form-textarea" name="proj_desc"
+                                  rows="2" th:text="${proj.description}"></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">URL do projeto</label>
+                            <input class="form-input" type="url" name="proj_url" th:value="${proj.url}"/>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Repositório</label>
+                            <input class="form-input" type="url" name="proj_repo" th:value="${proj.repoUrl}"/>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-danger btn-sm mt-1 remove-item">Remover</button>
+                    <hr class="divider"/>
+                </div>
+            </div>
+        </div>
+
+        <!-- Experiência -->
+        <div class="card mb-2">
+            <div class="card-header">
+                <h2>Experiência</h2>
+                <button type="button" class="btn btn-ghost btn-sm" id="addExperience">+ Adicionar experiência</button>
+            </div>
+            <div id="experiencesList">
+                <div class="exp-item" th:each="exp : ${profile.experiences}">
+                    <input type="hidden" name="exp_id" th:value="${exp.id}"/>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Empresa *</label>
+                            <input class="form-input" type="text" name="exp_company"
+                                   th:value="${exp.company}" required/>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Cargo *</label>
+                            <input class="form-input" type="text" name="exp_role"
+                                   th:value="${exp.role}" required/>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Início (YYYY-MM)</label>
+                            <input class="form-input" type="month" name="exp_start"
+                                   th:value="${exp.startDate}"/>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Fim (deixe vazio se atual)</label>
+                            <input class="form-input" type="month" name="exp_end"
+                                   th:value="${exp.endDate}"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Descrição</label>
+                        <textarea class="form-input form-textarea" name="exp_desc"
+                                  rows="2" th:text="${exp.description}"></textarea>
+                    </div>
+                    <button type="button" class="btn btn-danger btn-sm mt-1 remove-item">Remover</button>
+                    <hr class="divider"/>
+                </div>
+            </div>
+        </div>
+
+        <!-- Livros lidos -->
+        <div class="card mb-2">
+            <div class="card-header">
+                <h2>Livros lidos</h2>
+                <button type="button" class="btn btn-ghost btn-sm" id="addBook">+ Adicionar livro</button>
+            </div>
+            <div id="booksList">
+                <div class="book-item" th:each="book : ${profile.books}">
+                    <input type="hidden" name="book_id" th:value="${book.id}"/>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Título *</label>
+                            <input class="form-input" type="text" name="book_title"
+                                   th:value="${book.title}" required/>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Autor</label>
+                            <input class="form-input" type="text" name="book_author"
+                                   th:value="${book.author}" placeholder="Ex: Robert C. Martin"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Ano de leitura</label>
+                        <input class="form-input" type="number" name="book_year"
+                               th:value="${book.year}" placeholder="Ex: 2024" min="1900" max="2100"
+                               style="max-width:140px"/>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Resenha / Comentário</label>
+                        <textarea class="form-input form-textarea" name="book_review"
+                                  rows="2" th:text="${book.review}"
+                                  placeholder="O que você achou do livro?"></textarea>
+                    </div>
+                    <button type="button" class="btn btn-danger btn-sm mt-1 remove-item">Remover</button>
+                    <hr class="divider"/>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary btn-lg">Salvar currículo</button>
+        </div>
+    </form>
+
+    <!-- ── Alterar senha ──────────────────────────────────── -->
+    <div class="card mt-2">
+        <div class="card-header"><h2>Alterar senha</h2></div>
+        <form th:action="@{/profile/password}" method="post">
+            <div class="form-group">
+                <label class="form-label" for="currentPassword">Senha atual</label>
+                <input id="currentPassword" class="form-input" type="password"
+                       name="currentPassword" autocomplete="current-password"
+                       placeholder="••••••••" required/>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="newPassword">Nova senha</label>
+                <input id="newPassword" class="form-input" type="password"
+                       name="newPassword" autocomplete="new-password"
+                       placeholder="mínimo 8 caracteres" required/>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="confirmPassword">Confirmar nova senha</label>
+                <input id="confirmPassword" class="form-input" type="password"
+                       name="confirmPassword" autocomplete="new-password"
+                       placeholder="repita a senha" required/>
+            </div>
+            <button type="submit" class="btn btn-primary">Salvar senha</button>
+        </form>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+<template id="tmpl-project">
+    <div class="project-item">
+        <input type="hidden" name="proj_id" value=""/>
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label">Nome do projeto *</label>
+                <input class="form-input" type="text" name="proj_name" required/>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Tecnologias</label>
+                <input class="form-input" type="text" name="proj_tech" placeholder="Ex: React, Node.js"/>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="form-label">Descrição</label>
+            <textarea class="form-input form-textarea" name="proj_desc" rows="2"></textarea>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label">URL do projeto</label>
+                <input class="form-input" type="url" name="proj_url"/>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Repositório</label>
+                <input class="form-input" type="url" name="proj_repo"/>
+            </div>
+        </div>
+        <button type="button" class="btn btn-danger btn-sm mt-1 remove-item">Remover</button>
+        <hr class="divider"/>
+    </div>
+</template>
+
+<template id="tmpl-experience">
+    <div class="exp-item">
+        <input type="hidden" name="exp_id" value=""/>
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label">Empresa *</label>
+                <input class="form-input" type="text" name="exp_company" required/>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Cargo *</label>
+                <input class="form-input" type="text" name="exp_role" required/>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label">Início (YYYY-MM)</label>
+                <input class="form-input" type="month" name="exp_start"/>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Fim (deixe vazio se atual)</label>
+                <input class="form-input" type="month" name="exp_end"/>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="form-label">Descrição</label>
+            <textarea class="form-input form-textarea" name="exp_desc" rows="2"></textarea>
+        </div>
+        <button type="button" class="btn btn-danger btn-sm mt-1 remove-item">Remover</button>
+        <hr class="divider"/>
+    </div>
+</template>
+
+<template id="tmpl-book">
+    <div class="book-item">
+        <input type="hidden" name="book_id" value=""/>
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label">Título *</label>
+                <input class="form-input" type="text" name="book_title" required/>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Autor</label>
+                <input class="form-input" type="text" name="book_author" placeholder="Ex: Robert C. Martin"/>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="form-label">Ano de leitura</label>
+            <input class="form-input" type="number" name="book_year"
+                   placeholder="Ex: 2024" min="1900" max="2100" style="max-width:140px"/>
+        </div>
+        <div class="form-group">
+            <label class="form-label">Resenha / Comentário</label>
+            <textarea class="form-input form-textarea" name="book_review"
+                      rows="2" placeholder="O que você achou do livro?"></textarea>
+        </div>
+        <button type="button" class="btn btn-danger btn-sm mt-1 remove-item">Remover</button>
+        <hr class="divider"/>
+    </div>
+</template>
+
+<script>
+    document.getElementById('addProject').addEventListener('click', () => {
+        const tmpl = document.getElementById('tmpl-project').content.cloneNode(true);
+        document.getElementById('projectsList').appendChild(tmpl);
+    });
+    document.getElementById('addExperience').addEventListener('click', () => {
+        const tmpl = document.getElementById('tmpl-experience').content.cloneNode(true);
+        document.getElementById('experiencesList').appendChild(tmpl);
+    });
+    document.getElementById('addBook').addEventListener('click', () => {
+        const tmpl = document.getElementById('tmpl-book').content.cloneNode(true);
+        document.getElementById('booksList').appendChild(tmpl);
+    });
+    document.addEventListener('click', e => {
+        if (e.target.classList.contains('remove-item')) {
+            const item = e.target.closest('.project-item, .exp-item, .book-item');
+            if (item) item.remove();
+        }
+    });
+</script>
+
+</body>
+</html>

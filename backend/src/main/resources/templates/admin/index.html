@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-BR"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Admin')}"></head>
+<body>
+
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<main class="page-wrapper">
+    <h1 class="page-title">⚙️ Painel Admin</h1>
+
+    <div th:replace="~{fragments/layout :: flash}"></div>
+
+    <!-- Stats gerais -->
+    <div class="stats-grid mb-2">
+        <div class="stat-card">
+            <div class="stat-label">Total de usuários</div>
+            <div class="stat-value" th:text="${totalUsers}">0</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Ativos</div>
+            <div class="stat-value" th:text="${activeUsers}">0</div>
+            <div class="stat-sub">Habilitados</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Admins</div>
+            <div class="stat-value" th:text="${adminCount}">0</div>
+        </div>
+    </div>
+
+    <!-- Tabela de usuários -->
+    <div class="card">
+        <div class="card-header">
+            <h2>Usuários cadastrados</h2>
+        </div>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Username</th>
+                        <th>E-mail</th>
+                        <th>Perfil</th>
+                        <th>Status</th>
+                        <th>Criado em</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="user : ${users}">
+                        <td th:text="${user.id}">1</td>
+                        <td th:text="${user.username}">usuario</td>
+                        <td th:text="${user.email}">email@exemplo.com</td>
+                        <td>
+                            <span class="badge"
+                                  th:classappend="${user.role.name() == 'ROLE_ADMIN'} ? 'badge-yellow' : 'badge-purple'"
+                                  th:text="${user.role.name()}">ROLE_USER</span>
+                        </td>
+                        <td>
+                            <span class="badge"
+                                  th:classappend="${user.enabled} ? 'badge-green' : 'badge-red'"
+                                  th:text="${user.enabled} ? 'Ativo' : 'Inativo'">Ativo</span>
+                        </td>
+                        <td th:text="${#temporals.format(user.createdAt, 'dd/MM/yyyy')}">01/01/2024</td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(users)}">
+                        <td colspan="6" class="text-muted text-right">Nenhum usuário encontrado.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>

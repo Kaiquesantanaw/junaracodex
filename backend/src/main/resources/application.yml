@@ -1,0 +1,37 @@
+spring:
+  application:
+    name: portfolio-saas
+
+  profiles:
+    active: dev
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/portfolio_saas
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update          # use 'validate' em produção
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+  thymeleaf:
+    cache: false                 # true em produção
+
+server:
+  port: 8080
+
+jwt:
+  # Troque por uma chave forte (mínimo 256 bits / 32 chars) e use variável de ambiente em produção
+  secret: ${JWT_SECRET:minha-chave-super-secreta-portfolio-saas-2024!}
+  expiration-ms: 86400000       # 24 horas
+
+logging:
+  level:
+    com.portfoliosass: DEBUG
+    org.springframework.security: INFO

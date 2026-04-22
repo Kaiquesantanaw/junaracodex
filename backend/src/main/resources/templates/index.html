@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt-BR"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Home')}"></head>
+<body>
+
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<main>
+    <!-- Hero -->
+    <section>
+        <div class="hero">
+            <span class="hero-badge">🚀 Novo · Versão 1.0</span>
+            <h1>Gerencie seu portfólio<br/><span>de forma inteligente</span></h1>
+            <p>A plataforma SaaS que centraliza seus projetos, métricas e clientes num único lugar. Grátis para começar.</p>
+            <div class="hero-actions">
+                <a th:href="@{/register}" class="btn btn-primary btn-lg">Começar gratuitamente</a>
+                <a th:href="@{/login}"    class="btn btn-ghost btn-lg">Fazer login</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section>
+        <div class="features">
+            <div class="feature-card">
+                <div class="feature-icon">📁</div>
+                <h3>Projetos organizados</h3>
+                <p>Cadastre e exiba seus projetos com links, tecnologias e descrições detalhadas.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h3>Métricas em tempo real</h3>
+                <p>Acompanhe visualizações, acessos e engajamento do seu portfólio com dashboards claros.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔐</div>
+                <h3>Segurança garantida</h3>
+                <p>Autenticação JWT, senhas com BCrypt e controle de acesso por perfil.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3>Alta performance</h3>
+                <p>Construído com Spring Boot 3 + Java 21 Virtual Threads para máxima velocidade.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🎨</div>
+                <h3>Personalizável</h3>
+                <p>Adapte cores, layout e conteúdo para representar sua identidade profissional.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">☁️</div>
+                <h3>Deploy fácil</h3>
+                <p>Suba seu portfólio em minutos com Docker e PostgreSQL prontos para produção.</p>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>

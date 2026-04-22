@@ -1,0 +1,19 @@
+# Configurações de desenvolvimento (sobrepõe application.yml)
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/portfolio_saas
+    username: postgres
+    password: postgres
+  jpa:
+    show-sql: true
+  thymeleaf:
+    cache: false
+
+server:
+  cookie:
+    secure: false   # HTTP em dev — NUNCA use false em produção
+
+logging:
+  level:
+    com.portfoliosass: DEBUG
+    org.springframework.security: DEBUG

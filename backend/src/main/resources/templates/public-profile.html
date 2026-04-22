@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title th:text="${profile.fullName != null and !#strings.isEmpty(profile.fullName)} ? ${profile.fullName} + ' — SolibriProfile' : ${owner} + ' — SolibriProfile'">
+        SolibriProfile
+    </title>
+    <link rel="stylesheet" th:href="@{/css/app.css}"/>
+</head>
+<body class="public-cv-body">
+
+<!-- ── Navbar mínima ────────────────────────────────────── -->
+<nav class="navbar">
+    <div class="nav-inner">
+        <a th:href="@{/}" class="nav-brand">Solibri<span>Profile</span></a>
+        <div class="nav-actions">
+            <a th:href="@{/login}" class="btn btn-ghost btn-sm">Entrar</a>
+            <a th:href="@{/register}" class="btn btn-primary btn-sm">Criar meu currículo</a>
+        </div>
+    </div>
+</nav>
+
+<main class="cv-page">
+    <div class="cv-layout">
+
+        <!-- ═══════════════ SIDEBAR ═══════════════ -->
+        <aside class="cv-sidebar">
+
+            <!-- Avatar + Nome + Cargo + Localização -->
+            <div class="cv-sidebar-header">
+                <div class="cv-avatar"
+                     th:text="${#strings.substring(owner, 0, 1).toUpperCase()}">U</div>
+                <h1 class="cv-name"
+                    th:text="${profile.fullName != null and !#strings.isEmpty(profile.fullName)} ? ${profile.fullName} : ${owner}">
+                    Nome
+                </h1>
+                <p class="cv-title"
+                   th:if="${profile.jobTitle != null and !#strings.isEmpty(profile.jobTitle)}"
+                   th:text="${profile.jobTitle}">Cargo</p>
+                <p class="cv-location"
+                   th:if="${profile.location != null and !#strings.isEmpty(profile.location)}">
+                    📍 <span th:text="${profile.location}">Localização</span>
+                </p>
+            </div>
+
+            <!-- Contatos -->
+            <div class="cv-sidebar-section"
+                 th:if="${(profile.contactEmail != null and !#strings.isEmpty(profile.contactEmail))
+                       or (profile.contactPhone != null and !#strings.isEmpty(profile.contactPhone))
+                       or (profile.contactLinkedin != null and !#strings.isEmpty(profile.contactLinkedin))
+                       or (profile.contactGithub != null and !#strings.isEmpty(profile.contactGithub))
+                       or (profile.contactWebsite != null and !#strings.isEmpty(profile.contactWebsite))}">
+                <h3 class="cv-sidebar-title">Contato</h3>
+                <div class="cv-contacts">
+                    <a th:if="${profile.contactEmail != null and !#strings.isEmpty(profile.contactEmail)}"
+                       th:href="'mailto:' + ${profile.contactEmail}" class="cv-contact-link">
+                        ✉ <span th:text="${profile.contactEmail}"></span>
+                    </a>
+                    <a th:if="${profile.contactPhone != null and !#strings.isEmpty(profile.contactPhone)}"
+                       th:href="'tel:' + ${profile.contactPhone}" class="cv-contact-link">
+                        📞 <span th:text="${profile.contactPhone}"></span>
+                    </a>
+                    <a th:if="${profile.contactLinkedin != null and !#strings.isEmpty(profile.contactLinkedin)}"
+                       th:href="${profile.contactLinkedin}" class="cv-contact-link" target="_blank" rel="noopener">
+                        LinkedIn ↗
+                    </a>
+                    <a th:if="${profile.contactGithub != null and !#strings.isEmpty(profile.contactGithub)}"
+                       th:href="${profile.contactGithub}" class="cv-contact-link" target="_blank" rel="noopener">
+                        GitHub ↗
+                    </a>
+                    <a th:if="${profile.contactWebsite != null and !#strings.isEmpty(profile.contactWebsite)}"
+                       th:href="${profile.contactWebsite}" class="cv-contact-link" target="_blank" rel="noopener">
+                        Website ↗
+                    </a>
+                </div>
+            </div>
+
+            <!-- Skills -->
+            <div class="cv-sidebar-section"
+                 th:if="${profile.skills != null and !#strings.isEmpty(profile.skills)}">
+                <h3 class="cv-sidebar-title">Skills</h3>
+                <div class="cv-skills">
+                    <span class="skill-tag"
+                          th:each="skill : ${#strings.arraySplit(profile.skills, ',')}"
+                          th:text="${#strings.trim(skill)}"></span>
+                </div>
+            </div>
+
+            <!-- Livros lidos -->
+            <div class="cv-sidebar-section"
+                 th:if="${profile.books != null and !profile.books.empty}">
+                <h3 class="cv-sidebar-title">📚 Livros lidos</h3>
+                <ul class="cv-book-list">
+                    <li class="cv-book-item" th:each="book : ${profile.books}">
+                        <span class="cv-book-title" th:text="${book.title}">Título</span>
+                        <span class="cv-book-author"
+                              th:if="${book.author != null and !#strings.isEmpty(book.author)}"
+                              th:text="${book.author}">Autor</span>
+                        <span class="cv-book-year text-muted"
+                              th:if="${book.year != null and !#strings.isEmpty(book.year)}"
+                              th:text="${book.year}">2024</span>
+                        <p class="cv-book-review text-muted"
+                           th:if="${book.review != null and !#strings.isEmpty(book.review)}"
+                           th:text="${book.review}"></p>
+                    </li>
+                </ul>
+            </div>
+
+        </aside>
+
+        <!-- ═══════════════ CONTEÚDO PRINCIPAL ═══════════════ -->
+        <section class="cv-main">
+
+            <!-- Sobre -->
+            <div class="card mb-2"
+                 th:if="${profile.bio != null and !#strings.isEmpty(profile.bio)}">
+                <div class="card-header"><h2>Sobre</h2></div>
+                <p class="cv-bio" th:text="${profile.bio}"></p>
+            </div>
+
+            <!-- Experiência -->
+            <div class="card mb-2"
+                 th:if="${profile.experiences != null and !profile.experiences.empty}">
+                <div class="card-header"><h2>Experiência</h2></div>
+                <div class="cv-timeline">
+                    <div class="cv-timeline-item" th:each="exp : ${profile.experiences}">
+                        <div class="cv-timeline-dot"></div>
+                        <div class="cv-timeline-content">
+                            <div class="cv-exp-header">
+                                <h3 th:text="${exp.role}">Cargo</h3>
+                                <span class="cv-company" th:text="${exp.company}">Empresa</span>
+                            </div>
+                            <p class="cv-period text-muted">
+                                <span th:text="${exp.startDate != null and !#strings.isEmpty(exp.startDate)} ? ${exp.startDate} : ''"></span>
+                                <span th:if="${exp.startDate != null and !#strings.isEmpty(exp.startDate)}"> — </span>
+                                <span th:text="${exp.endDate != null and !#strings.isEmpty(exp.endDate)} ? ${exp.endDate} : 'Atual'"></span>
+                            </p>
+                            <p class="cv-exp-desc"
+                               th:if="${exp.description != null and !#strings.isEmpty(exp.description)}"
+                               th:text="${exp.description}"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Projetos -->
+            <div class="card mb-2"
+                 th:if="${profile.projects != null and !profile.projects.empty}">
+                <div class="card-header"><h2>Projetos</h2></div>
+                <div class="cv-projects">
+                    <div class="cv-project-card" th:each="proj : ${profile.projects}">
+                        <div class="cv-project-header">
+                            <h3 th:text="${proj.name}">Nome do Projeto</h3>
+                            <div class="cv-project-links">
+                                <a th:if="${proj.url != null and !#strings.isEmpty(proj.url)}"
+                                   th:href="${proj.url}" class="btn btn-ghost btn-sm"
+                                   target="_blank" rel="noopener">Demo ↗</a>
+                                <a th:if="${proj.repoUrl != null and !#strings.isEmpty(proj.repoUrl)}"
+                                   th:href="${proj.repoUrl}" class="btn btn-ghost btn-sm"
+                                   target="_blank" rel="noopener">Código ↗</a>
+                            </div>
+                        </div>
+                        <p class="cv-project-desc"
+                           th:if="${proj.description != null and !#strings.isEmpty(proj.description)}"
+                           th:text="${proj.description}"></p>
+                        <div class="cv-skills mt-1"
+                             th:if="${proj.technologies != null and !#strings.isEmpty(proj.technologies)}">
+                            <span class="skill-tag"
+                                  th:each="tech : ${#strings.arraySplit(proj.technologies, ',')}"
+                                  th:text="${#strings.trim(tech)}"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+    </div><!-- /.cv-layout -->
+</main>
+
+<!-- ── Footer ───────────────────────────────────────────── -->
+<footer class="footer">
+    <div class="footer-inner">
+        <p class="footer-brand">Solibri<span>Profile</span></p>
+        <p class="footer-copy">
+            Crie o seu currículo em
+            <a th:href="@{/register}" class="link-primary">SolibriProfile</a> — grátis
+        </p>
+    </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-BR"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Dashboard')}"></head>
+<body>
+
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<main class="page-wrapper">
+    <div class="flex-between mb-2">
+        <h1 class="page-title">Dashboard</h1>
+        <a th:href="@{/profile}" class="btn btn-ghost btn-sm">Meu perfil</a>
+    </div>
+
+    <div th:replace="~{fragments/layout :: flash}"></div>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-label">Projetos</div>
+            <div class="stat-value">0</div>
+            <div class="stat-sub">Adicione seu primeiro</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Visualizações</div>
+            <div class="stat-value">0</div>
+            <div class="stat-sub">Este mês</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Contatos</div>
+            <div class="stat-value">0</div>
+            <div class="stat-sub">Mensagens recebidas</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Conta</div>
+            <div class="stat-value">
+                <span class="badge badge-purple"
+                      th:text="${#authentication.authorities.iterator().next().authority}">ROLE_USER</span>
+            </div>
+            <div class="stat-sub" th:text="${username}">username</div>
+        </div>
+    </div>
+
+    <!-- Boas-vindas -->
+    <div class="card mb-2">
+        <div class="card-header">
+            <h2>Bem-vindo, <span th:text="${username}">usuário</span>!</h2>
+        </div>
+        <p class="text-muted">Você está autenticado via JWT. Use o menu para navegar.</p>
+    </div>
+
+    <!-- Painel admin -->
+    <div class="card" sec:authorize="hasAuthority('ROLE_ADMIN')">
+        <div class="card-header">
+            <h2>⚙️ Área Administrativa</h2>
+            <a th:href="@{/admin}" class="btn btn-primary btn-sm">Acessar painel</a>
+        </div>
+        <p class="text-muted">Você tem privilégios de administrador.</p>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>
